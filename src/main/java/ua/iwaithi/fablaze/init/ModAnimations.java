@@ -6,9 +6,10 @@ import org.zeith.hammerlib.annotations.*;
 
 @SimplyRegister
 public interface ModAnimations {
-    @RegistryName("hui_animation")
-    IAnimationContainer HUI_ANIMATION = IAnimationContainer.create();
+    @RegistryName("npc")
+    IAnimationContainer NPC_ANIMATION_ROOT = IAnimationContainer.create();
 
-    AnimationHolder HUI_ANIMATION_IDLE = HUI_ANIMATION.holder("idle");
-    AnimationHolder HUI_ANIMATION_WALK = HUI_ANIMATION.holder("walk");
+    AnimationHolder NPC_IDLE = NPC_ANIMATION_ROOT.holder("animation.npc.idle");
+    AnimationHolder NPC_WALK = NPC_ANIMATION_ROOT.holder("animation.npc.walk");
+    AnimationHolder NPC_RUN = NPC_ANIMATION_ROOT.holder("animation.npc.run");
 }

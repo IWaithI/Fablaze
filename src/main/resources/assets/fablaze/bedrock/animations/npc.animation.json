@@ -159,24 +159,6 @@
 					}
 				},
 				"Head": {
-					"rotation": {
-						"0.0": {
-							"post": ["query.head_pitch", "query.head_yaw", 0],
-							"lerp_mode": "catmullrom"
-						},
-						"1.125": {
-							"post": ["query.head_pitch+0.3006", "query.head_yaw+2.4999", 0.02591],
-							"lerp_mode": "catmullrom"
-						},
-						"3.3333": {
-							"post": ["query.head_pitch-0.8019", "query.head_yaw-4.9998", 0.04432],
-							"lerp_mode": "catmullrom"
-						},
-						"5.0": {
-							"post": ["query.head_pitch", "query.head_yaw", 0],
-							"lerp_mode": "catmullrom"
-						}
-					},
 					"position": {
 						"0.0": {
 							"post": [0, 0, 0],

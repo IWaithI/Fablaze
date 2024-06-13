@@ -1,4 +1,4 @@
-package ua.iwaithi.fablaze.init;
+package ua.iwaithi.fablaze.content.entity;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.*;
@@ -11,9 +11,12 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.zeith.hammeranims.api.animsys.*;
+import org.zeith.hammeranims.api.animsys.AnimationSystem;
+import org.zeith.hammeranims.api.animsys.CommonLayerNames;
 import org.zeith.hammeranims.api.animsys.layer.AnimationLayer;
 import org.zeith.hammeranims.api.tile.IAnimatedEntity;
+import ua.iwaithi.fablaze.init.ModAnimations;
+import ua.iwaithi.fablaze.init.ModEntities;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EntityFreya
@@ -46,10 +49,7 @@ public class EntityFreya
 
         if(level().isClientSide) return;
 
-        setCustomNameVisible(false);
-        setCustomName(ContainersHA.FREYA_BLOCK.getName());
-
-        animations.startAnimationAt(CommonLayerNames.AMBIENT, ContainersHA.FREYA_BREATHE);
+        animations.startAnimationAt(CommonLayerNames.AMBIENT, ModAnimations.NPC_IDLE);
 
         var pos = position();
         double moved = Math.sqrt(pos.distanceToSqr(xo, yo, zo));
@@ -58,7 +58,8 @@ public class EntityFreya
 
         if(moved > 0)
         {
-            animations.startAnimationAt(CommonLayerNames.LEGS, ContainersHA.HUI_ANIMATION);
+            System.out.println(moved);
+            animations.startAnimationAt(CommonLayerNames.LEGS, moved > 0.2 ? ModAnimations.NPC_RUN : ModAnimations.NPC_WALK);
         } else
         {
             animations.stopAnimation(CommonLayerNames.LEGS, 0.4F);
@@ -97,6 +98,6 @@ public class EntityFreya
     @SubscribeEvent
     public static void attributes(EntityAttributeCreationEvent e)
     {
-        e.put(ContainersHA.FREYA_ENTITY, Mob.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).build());
+        e.put(ModEntities.FREYA, Mob.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).build());
     }
 }
