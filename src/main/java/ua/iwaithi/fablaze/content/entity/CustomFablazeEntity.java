@@ -6,6 +6,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -14,6 +15,7 @@ import org.zeith.hammeranims.api.animsys.CommonLayerNames;
 import org.zeith.hammeranims.api.animsys.layer.AnimationLayer;
 import org.zeith.hammeranims.api.tile.IAnimatedEntity;
 import ua.iwaithi.fablaze.content.dataset.NPCMapper;
+import ua.iwaithi.fablaze.content.entity.goal.MoveToGoal;
 import ua.iwaithi.fablaze.init.ModAnimations;
 import ua.iwaithi.fablaze.init.ModEntities;
 
@@ -64,6 +66,19 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
     {
         e.put(ModEntities.FABLAZENPC, Mob.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).build());
     }
+
+    MoveToGoal moveGoal;
+
+    protected void registerGoals() {
+        removeFreeWill();
+        moveGoal = new MoveToGoal(this);
+        this.goalSelector.addGoal(1, moveGoal);
+    }
+    public void setTarget(Vec3 target, double speed){
+        moveGoal.setTarget(target);
+        moveGoal.setSpeed(speed);
+    }
+
 
     @Override
     public void tick()
