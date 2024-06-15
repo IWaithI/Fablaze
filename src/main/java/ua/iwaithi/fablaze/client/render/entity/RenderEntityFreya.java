@@ -17,36 +17,29 @@ import ua.iwaithi.fablaze.init.ModEntities;
 import ua.iwaithi.fablaze.init.ModGeometries;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class RenderEntityFreya
-		extends BedrockEntityRenderer<EntityFreya>
-{
+public class RenderEntityFreya extends BedrockEntityRenderer<EntityFreya> {
 	protected final ResourceLocation texture = Fablaze.id("textures/entity/freya.png");
 	
-	public RenderEntityFreya(EntityRendererProvider.Context pContext)
-	{
+	public RenderEntityFreya(EntityRendererProvider.Context pContext) {
 		super(pContext, ModGeometries.FREYA, 1);
 	}
 	
 	@Override
-	public ResourceLocation getTextureLocation(EntityFreya entityFreya)
-	{
+	public ResourceLocation getTextureLocation(EntityFreya entityFreya) {
 		return texture;
 	}
 	
 	@Override
-	protected RenderType getRenderType(ResourceLocation texture)
-	{
+	protected RenderType getRenderType(ResourceLocation texture) {
 		return RenderType.entityCutout(texture);
 	}
 	
 	@Override
-	protected void renderNameTag(EntityFreya entity, Component nameTag, PoseStack pose, MultiBufferSource bufs, int packedLightCoords)
-	{
+	protected void renderNameTag(EntityFreya entity, Component nameTag, PoseStack pose, MultiBufferSource bufs, int packedLightCoords) {
 	}
 	
 	@SubscribeEvent
-	public static void registerRenderer(EntityRenderersEvent.RegisterRenderers e)
-	{
+	public static void registerRenderer(EntityRenderersEvent.RegisterRenderers e) {
 		e.registerEntityRenderer(ModEntities.FREYA, RenderEntityFreya::new);
 	}
 }
