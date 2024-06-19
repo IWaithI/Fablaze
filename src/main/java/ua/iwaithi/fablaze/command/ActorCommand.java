@@ -26,17 +26,18 @@ public class ActorCommand {
                 .then(Commands.argument("Coordinates", Vec3Argument.vec3())                 // - /actor move "Name" "Coordinates" ...
                 .executes(this::resendTarged))))                                                   //Execute
 
-                .then(Commands.literal("list").executes(this::listing)));                     // - /actor list = Execute
+                .then(Commands.literal("list").executes(this::listing))                     // - /actor list = Execute
 //
 //                .then(Commands.literal("say")
 //                .then(Commands.argument("Name", StringArgumentType.string())
 //                .then(Commands.argument("Message", StringArgumentType.string())
 //                .executes(this::sendMessage))))
 //
-//                .then(Commands.literal("change")
-//                .then(Commands.argument("Name", StringArgumentType.word())
-//                .then(Commands.argument("Resource", StringArgumentType.word())
-//                .executes(this::changeRes))))
+                .then(Commands.literal("change")
+                .then(Commands.argument("Name", StringArgumentType.word())
+                .then(Commands.argument("Resource", StringArgumentType.word())
+                .then(Commands.argument("Glow", BoolArgumentType.bool())
+                .executes(this::changeRes))))));
 //
 //                .then(Commands.literal("name")                                              // - /actor name ...
 //                .then(Commands.argument("Name",StringArgumentType.word())                   // - /actor name "Name" ...
@@ -81,6 +82,13 @@ public class ActorCommand {
         if (player != null){
             player.sendSystemMessage(Component.literal(NPCMapper.getActors()).withStyle(ChatFormatting.BLUE));
         }
+        return 1;
+    }
+
+    public int changeRes(CommandContext<CommandSourceStack> command) throws CommandSyntaxException{
+        CustomFablazeEntity entity = NPCMapper.getActorByName(StringArgumentType.getString(command,"Name"));
+        entity.changeResource(StringArgumentType.getString(command, "Resource"), BoolArgumentType.getBool(command, "Glow"));
+        System.out.println("Resource changed: " + StringArgumentType.getString(command, "Resource"));
         return 1;
     }
 
