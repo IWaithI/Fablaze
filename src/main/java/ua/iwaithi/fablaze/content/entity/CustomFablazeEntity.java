@@ -1,10 +1,18 @@
 package ua.iwaithi.fablaze.content.entity;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -47,10 +55,37 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         return animations;
     }
 
+    public static final EntityDataAccessor<String> DATA_CHARACTER =
+            SynchedEntityData.defineId(CustomFablazeEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Boolean> DATA_GLOW =
+            SynchedEntityData.defineId(CustomFablazeEntity.class, EntityDataSerializers.BOOLEAN);
+
+    @Override
+    protected void defineSynchedData(){
+        super.defineSynchedData();
+        this.entityData.define(DATA_GLOW, getPersistentData().getBoolean("isGlow"));
+        this.entityData.define(DATA_CHARACTER, getPersistentData().getString("character"));
+        if(entityData.get(DATA_CHARACTER).isBlank()){
+            this.entityData.set(DATA_CHARACTER, "symmetry");
+        }
+    }
+
+    public void changeResource(String resource, boolean isGlow){
+        this.entityData.set(DATA_CHARACTER, resource);
+        this.entityData.set(DATA_GLOW, isGlow);
+        System.out.println("Attempted change res to " + resource + ". Result: " + this.entityData.get(DATA_CHARACTER));
+    }
+    public String getResource(){
+        return entityData.get(DATA_CHARACTER);
+    }
+    public boolean isGlow(){ return  entityData.get(DATA_GLOW); }
+
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound)
     {
         pCompound.put("Animations", animations.serializeNBT());
+        pCompound.putString("character", this.entityData.get(DATA_CHARACTER));
+        pCompound.putBoolean("isGlow", this.entityData.get(DATA_GLOW));
         super.addAdditionalSaveData(pCompound);
     }
 
@@ -58,6 +93,8 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
     public void readAdditionalSaveData(CompoundTag pCompound)
     {
         animations.deserializeNBT(pCompound.getCompound("Animations"));
+        this.entityData.set(DATA_CHARACTER, pCompound.getString("character"));
+        this.entityData.set(DATA_GLOW, pCompound.getBoolean("isGlow"));
         super.readAdditionalSaveData(pCompound);
     }
 
@@ -77,6 +114,18 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
     public void setTarget(Vec3 target, double speed){
         moveGoal.setTarget(target);
         moveGoal.setSpeed(speed);
+    }
+    @Override
+    protected InteractionResult mobInteract(Player player, InteractionHand hand) {
+
+        if (player.isHolding(Items.STICK)) {
+            if (!entityData.get(DATA_GLOW) && !level().isClientSide() && hand == InteractionHand.MAIN_HAND) {
+
+                player.sendSystemMessage(Component.literal("Glow ON"));
+            } else if(!level().isClientSide() && hand == InteractionHand.MAIN_HAND) player.sendSystemMessage(Component.literal("Glow OFF"));
+            entityData.set(DATA_GLOW, !entityData.get(DATA_GLOW));
+
+        }return InteractionResult.SUCCESS;
     }
 
 

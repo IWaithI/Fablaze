@@ -9,4 +9,7 @@ public interface ModGeometries
 {
 	@RegistryName("freya")
 	IGeometryContainer FREYA = IGeometryContainer.create();
+	@RegistryName("symmetry")
+	IGeometryContainer SYMMETRY = IGeometryContainer.create();
+
 }
