@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 import org.zeith.hammerlib.core.adapter.LanguageAdapter;
+import ua.iwaithi.fablaze.common.util.ModItems;
 import ua.iwaithi.fablaze.init.ModForgeEvents;
 
 @Mod(Fablaze.MODID)
@@ -26,6 +27,8 @@ public class Fablaze
 		forgebus.addListener(ModForgeEvents::onUnload);
 		forgebus.addListener(ModForgeEvents::onCommandsRegister);
 
+		ModItems.register(modEventBus);
+		CreativeModTabs.register(modEventBus);
 	}
 	
 	public static ResourceLocation id(String path)
