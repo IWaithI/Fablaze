@@ -88,7 +88,7 @@ public class ActorCommand {
         CustomFablazeEntity entity = NPCMapper.getActorByName(StringArgumentType.getString(command,"Name"));
         Vec3 vector = Vec3Argument.getVec3(command,"Coordinates");
 
-        entity.getMoveControl().setWantedPosition(vector.x(), vector.y(), vector.z(), 1d);
+        entity.setTarget(vector,1d);
 
 
         return 1;
