@@ -29,7 +29,7 @@ public class Fablaze
 		forgebus.addListener(ModForgeEvents::onActorDeath);
 
 		ModItems.register(modEventBus);
-		CreativeModTabs.register(modEventBus);
+
 	}
 	
 	public static ResourceLocation id(String path)
