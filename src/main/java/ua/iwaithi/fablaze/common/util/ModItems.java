@@ -1,5 +1,7 @@
 package ua.iwaithi.fablaze.common.util;
 
+import net.minecraft.client.model.geom.builders.MaterialDefinition;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterials;
 import net.minecraft.world.item.Item;
@@ -12,7 +14,7 @@ import ua.iwaithi.fablaze.common.client.GeoItemArmor;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS;
-    public static final RegistryObject<Item> SHINOBI_HELMET;
+    public static final RegistryObject<Item> WESTERN_HAT;
     public static final RegistryObject<Item> SELENA_CHESTPLATE;
     public static final RegistryObject<Item> SELENA_LEGGINGS;
 
@@ -25,11 +27,11 @@ public class ModItems {
     static {
         ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, "fablaze");
 
-        SHINOBI_HELMET = ITEMS.register("shinobi_helmet", () -> {
-            return new GeoItemArmor(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Properties(), "textures/armor/shinobi_helmet.png", "geo/shinobi_helmet.geo.json");
+        WESTERN_HAT = ITEMS.register("western_hat", () -> {
+            return new GeoItemArmor(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Properties(), "textures/armor/western_hat.png", "geo/western_hat.geo.json");
         });
 
-        SELENA_CHESTPLATE = ITEMS.register("selena_chestplate", () -> {
+        SELENA_CHESTPLATE = ITEMS.register("selena_chestplate",     () -> {
             return new GeoItemArmor(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Properties(), "textures/armor/selena.png", "geo/selena.geo.json");
         });
 
