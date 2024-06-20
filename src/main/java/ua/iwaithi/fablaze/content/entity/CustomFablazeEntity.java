@@ -11,6 +11,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -110,6 +111,7 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         removeFreeWill();
         moveGoal = new MoveToGoal(this);
         this.goalSelector.addGoal(1, moveGoal);
+        this.goalSelector.addGoal(1, new RandomLookAroundGoal(this));
     }
     public void setTarget(Vec3 target, double speed){
         moveGoal.setTarget(target);

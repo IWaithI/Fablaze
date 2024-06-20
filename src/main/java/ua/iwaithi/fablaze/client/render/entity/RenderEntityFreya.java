@@ -37,7 +37,8 @@ public class RenderEntityFreya extends BedrockEntityRenderer<EntityFreya> {
 	@Override
 	protected void renderNameTag(EntityFreya entity, Component nameTag, PoseStack pose, MultiBufferSource bufs, int packedLightCoords) {
 	}
-	
+
+
 	@SubscribeEvent
 	public static void registerRenderer(EntityRenderersEvent.RegisterRenderers e) {
 		e.registerEntityRenderer(ModEntities.FREYA, RenderEntityFreya::new);
