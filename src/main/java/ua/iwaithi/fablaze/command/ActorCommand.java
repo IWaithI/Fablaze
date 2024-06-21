@@ -65,7 +65,7 @@ public class ActorCommand {
                         .then(Commands.literal("look-type")
                         .then(Commands.argument("Name", StringArgumentType.string())
                         .then(Commands.argument("Target", ResourceLocationArgument.id())
-                        .executes(ctx -> lookType(ctx, StringArgumentType.getString(ctx, "Name"), ResourceLocationArgument.getId(ctx, "Target")))))));
+                        .executes(ctx -> lookType(ctx, StringArgumentType.getString(ctx, "Name"), ResourceLocationArgument.getId(ctx, "Target"))))))
 //
 //                .then(Commands.literal("animation")
 //                .then(Commands.argument("Name", StringArgumentType.word())
@@ -75,9 +75,9 @@ public class ActorCommand {
 //                .then(Commands.argument("Additional", StringArgumentType.string())
 //                .executes(this::setAnimation)))))))
 //
-//                .then(Commands.literal("eliminate")                                         // - /actor eliminate ...
-//                .then(Commands.argument("Name", StringArgumentType.word())                  // - /actor eliminate "Name" ...
-//                .executes(this::eliminate))));                                                       //Execute
+                .then(Commands.literal("eliminate")                                         // - /actor eliminate ...
+                .then(Commands.argument("Name", StringArgumentType.word())                  // - /actor eliminate "Name" ...
+                .executes(this::eliminate))));
     }
 
     public int listing(CommandContext<CommandSourceStack> command) throws CommandSyntaxException{
@@ -136,6 +136,16 @@ public class ActorCommand {
         CustomFablazeEntity actor = NPCMapper.getActorByName(actorName);
         if (actor != null) {
             actor.setLookType(resourceLocation);
+            return 1;
+        }
+        return 0;
+    }
+    public int eliminate(CommandContext<CommandSourceStack> command) throws CommandSyntaxException {
+        String actorName = StringArgumentType.getString(command, "Name");
+        CustomFablazeEntity entity = NPCMapper.getActorByName(actorName);
+        if (entity != null) {
+            NPCMapper.deleteActorFromList(actorName);
+            entity.remove(Entity.RemovalReason.KILLED);
             return 1;
         }
         return 0;
