@@ -39,33 +39,34 @@ public class ActorCommand {
 //                .then(Commands.argument("Message", StringArgumentType.string())
 //                .executes(this::sendMessage))))
 //
+//                .then(Commands.literal("name")                                              // - /actor name ...
+//                .then(Commands.argument("Name",StringArgumentType.word())                   // - /actor name "Name" ...
+//                .then(Commands.argument("Boolean", BoolArgumentType.bool())                 // - /actor name "Name" "Boolean"
+//                .executes(this::setVisibility))))
+
+
                 .then(Commands.literal("change")
                 .then(Commands.argument("Name", StringArgumentType.word())
                 .then(Commands.argument("Resource", StringArgumentType.word())
                 .then(Commands.argument("Glow", BoolArgumentType.bool())
                 .executes(this::changeRes)))))
-//
-//                .then(Commands.literal("name")                                              // - /actor name ...
-//                .then(Commands.argument("Name",StringArgumentType.word())                   // - /actor name "Name" ...
-//                .then(Commands.argument("Boolean", BoolArgumentType.bool())                 // - /actor name "Name" "Boolean"
-//                .executes(this::setVisibility))))
-//
-                        .then(Commands.literal("look-position")
-                        .then(Commands.argument("Name", StringArgumentType.string())
-                        .then(Commands.argument("Position", Vec3ArgumentType.vec3())
-                        .executes(ctx -> lookPosition(ctx, StringArgumentType.getString(ctx, "Name"), Vec3ArgumentType.getVec3(ctx, "Position"))))))
-                        .then(Commands.literal("look-actor")
-                        .then(Commands.argument("Name", StringArgumentType.string())
-                        .then(Commands.argument("Target", StringArgumentType.string())
-                        .executes(ctx -> lookActor(ctx, StringArgumentType.getString(ctx, "Name"), StringArgumentType.getString(ctx, "Target"))))))
-                        .then(Commands.literal("look-entity")
-                        .then(Commands.argument("Name", StringArgumentType.string())
-                        .then(Commands.argument("Entity", EntityArgument.entity())
-                        .executes(ctx -> lookEntity(ctx, StringArgumentType.getString(ctx, "Name"), EntityArgument.getEntity(ctx, "Entity"))))))
-                        .then(Commands.literal("look-type")
-                        .then(Commands.argument("Name", StringArgumentType.string())
-                        .then(Commands.argument("Target", ResourceLocationArgument.id())
-                        .executes(ctx -> lookType(ctx, StringArgumentType.getString(ctx, "Name"), ResourceLocationArgument.getId(ctx, "Target"))))))
+
+                .then(Commands.literal("look-position")
+                .then(Commands.argument("Name", StringArgumentType.string())
+                .then(Commands.argument("Position", Vec3ArgumentType.vec3())
+                .executes(ctx -> lookPosition(ctx, StringArgumentType.getString(ctx, "Name"), Vec3ArgumentType.getVec3(ctx, "Position"))))))
+                .then(Commands.literal("look-actor")
+                .then(Commands.argument("Name", StringArgumentType.string())
+                .then(Commands.argument("Target", StringArgumentType.string())
+                .executes(ctx -> lookActor(ctx, StringArgumentType.getString(ctx, "Name"), StringArgumentType.getString(ctx, "Target"))))))
+                .then(Commands.literal("look-entity")
+                .then(Commands.argument("Name", StringArgumentType.string())
+                .then(Commands.argument("Entity", EntityArgument.entity())
+                .executes(ctx -> lookEntity(ctx, StringArgumentType.getString(ctx, "Name"), EntityArgument.getEntity(ctx, "Entity"))))))
+                .then(Commands.literal("look-type")
+                .then(Commands.argument("Name", StringArgumentType.string())
+                .then(Commands.argument("Target", ResourceLocationArgument.id())
+                .executes(ctx -> lookType(ctx, StringArgumentType.getString(ctx, "Name"), ResourceLocationArgument.getId(ctx, "Target"))))))
 //
 //                .then(Commands.literal("animation")
 //                .then(Commands.argument("Name", StringArgumentType.word())
@@ -77,7 +78,12 @@ public class ActorCommand {
 //
                 .then(Commands.literal("eliminate")                                         // - /actor eliminate ...
                 .then(Commands.argument("Name", StringArgumentType.word())                  // - /actor eliminate "Name" ...
-                .executes(this::eliminate))));
+                .executes(this::eliminate)))
+
+                .then(Commands.literal("setName")                                           // - /actor setName ...
+                .then(Commands.argument("Name", StringArgumentType.word())                  // - /actor setName "Name" ...
+                .then(Commands.argument("newName", StringArgumentType.word())               // - /actor setName "Name" "NewName" ...
+                .executes(this::setName)))));
     }
 
     public int listing(CommandContext<CommandSourceStack> command) throws CommandSyntaxException{
@@ -150,4 +156,11 @@ public class ActorCommand {
         }
         return 0;
     }
+    public int setName(CommandContext<CommandSourceStack> command) throws CommandSyntaxException {
+        String currentName = StringArgumentType.getString(command, "Name");
+        String newName = StringArgumentType.getString(command, "newName");
+        NPCMapper.renameActorInList(currentName, newName);
+        return 1;
+    }
+
 }

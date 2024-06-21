@@ -164,7 +164,6 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         }return InteractionResult.SUCCESS;
     }
 
-
     @Override
     public void tick() {
         animations.tick();
