@@ -32,7 +32,7 @@ import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntity {
-
+    //Initialization
     protected final AnimationSystem animations = AnimationSystem.create(this);
 
     public CustomFablazeEntity(EntityType<? extends CustomFablazeEntity> pEntityType, Level pLevel) {
@@ -43,11 +43,12 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         this.setPersistenceRequired();
     }
 
-    private String key = String.valueOf(this.getId());
-    private Entity lookAt = null;
-    private Vec3 lookPos = null;
-    private boolean isCustomLookSet = false;
+    @SubscribeEvent
+    public static void attributes(EntityAttributeCreationEvent e) {
+        e.put(ModEntities.FABLAZENPC, Mob.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).build());
+    }
 
+    //Hammerlib Animation system
     @Override
     public void setupSystem(AnimationSystem.Builder builder)
     {
@@ -73,25 +74,16 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         super.defineSynchedData();
         this.entityData.define(DATA_GLOW, getPersistentData().getBoolean("isGlow"));
         this.entityData.define(DATA_CHARACTER, getPersistentData().getString("character"));
-        if(entityData.get(DATA_CHARACTER).isEmpty()){
-            this.entityData.set(DATA_CHARACTER, "symmetry");
-        }
     }
 
-    public void changeResource(String resource, boolean isGlow){
-        this.entityData.set(DATA_CHARACTER, resource);
-        this.entityData.set(DATA_GLOW, isGlow);
-        System.out.println("Attempted change res to " + resource + ". Result: " + this.entityData.get(DATA_CHARACTER));
-    }
-    public String getResource(){
-        return entityData.get(DATA_CHARACTER);
-    }
-    public boolean isGlow(){ return  entityData.get(DATA_GLOW); }
-    public String getKey(){return this.key;}
+    //Entity Data Section
 
-    public void changeKey(String key){
-        this.key = key;
-    }
+    private String key = String.valueOf(this.getId());
+    private Entity lookAt = null;
+    private Vec3 lookPos = null;
+    private boolean isCustomLookSet = false;
+
+    // Save-Load Section
 
     @Override
     public void addAdditionalSaveData(CompoundTag pCompound) {
@@ -124,7 +116,10 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         if(!key.isEmpty()){NPCMapper.renameActorInList(String.valueOf(this.getId()),this.key);}
 
         animations.deserializeNBT(pCompound.getCompound("Animations"));
+
         this.entityData.set(DATA_CHARACTER, pCompound.getString("character"));
+        if(entityData.get(DATA_CHARACTER).isEmpty()) this.entityData.set(DATA_CHARACTER, "symmetry");
+
         this.entityData.set(DATA_GLOW, pCompound.getBoolean("isGlow"));
 
         if(!pCompound.getString("looktype").isEmpty()){
@@ -144,11 +139,8 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
 
     }
 
-    @SubscribeEvent
-    public static void attributes(EntityAttributeCreationEvent e)
-    {
-        e.put(ModEntities.FABLAZENPC, Mob.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.25D).build());
-    }
+
+    // Goals & Behavior
 
     MoveToGoal moveGoal;
     LookAtGoal lookGoal;
@@ -163,12 +155,13 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         this.goalSelector.addGoal(1, randomLookGoal);
         this.goalSelector.addGoal(2, lookGoal);
     }
-
     private void resetLookGoals() {
         lookGoal.reset();
         this.goalSelector.removeGoal(randomLookGoal);
         isCustomLookSet = true;
     }
+
+    // Entity methods
 
     public void setTarget(Vec3 target, double speed) {
         moveGoal.setTarget(target);
@@ -187,6 +180,23 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         lookGoal.setLookType(target);
     }
 
+    public void changeResource(String resource, boolean isGlow){
+        this.entityData.set(DATA_CHARACTER, resource);
+        this.entityData.set(DATA_GLOW, isGlow);
+        System.out.println("Attempted change res to " + resource + ". Result: " + this.entityData.get(DATA_CHARACTER));
+    }
+    public String getResource(){
+        return entityData.get(DATA_CHARACTER);
+    }
+    public boolean isGlow(){ return  entityData.get(DATA_GLOW); }
+    public String getKey(){return this.key;}
+
+    public void changeKey(String key){
+        this.key = key;
+    }
+
+    // Entity Interaction
+
     @Override
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
 
@@ -202,6 +212,8 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         }
         return InteractionResult.SUCCESS;
     }
+
+    // Entity ticking logic
 
     @Override
     public void tick() {
