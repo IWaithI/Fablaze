@@ -21,7 +21,7 @@ public class NPCMapper {
         actorMap.remove(key);
 
     }
-    public static void renameActorInList(int id, String key){
+    public static void renameActorInList(String id, String key){
         if(actorMap.containsKey(String.valueOf(id))){
             CustomFablazeEntity actor = getActorByName(String.valueOf(id));
             deleteActorFromList(String.valueOf(id));

@@ -37,9 +37,7 @@ public class MoveToGoal extends Goal {
     public boolean canUse() {
         if(Math.abs(new Vec3(actor.xo,actor.yo,actor.zo).subtract(target).length()) <= enterRad){
             return false;
-        }else if(Math.abs(new Vec3(actor.xo,actor.yo,actor.zo).subtract(target).length()) >= leaveRad){
-            return true;
-        }else return false;
+        }else return Math.abs(new Vec3(actor.xo, actor.yo, actor.zo).subtract(target).length()) >= leaveRad;
     }
 
     @Override
