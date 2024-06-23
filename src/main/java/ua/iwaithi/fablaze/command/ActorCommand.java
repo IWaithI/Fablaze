@@ -80,9 +80,9 @@ public class ActorCommand {
                 .then(Commands.argument("Name", StringArgumentType.word())                  // - /actor eliminate "Name" ...
                 .executes(this::eliminate)))
 
-                .then(Commands.literal("setName")                                           // - /actor setName ...
-                .then(Commands.argument("Name", StringArgumentType.word())                  // - /actor setName "Name" ...
-                .then(Commands.argument("newName", StringArgumentType.word())               // - /actor setName "Name" "NewName" ...
+                .then(Commands.literal("rename")                                           // - /actor rename ...
+                .then(Commands.argument("Name", StringArgumentType.word())                  // - /actor rename "Name" ...
+                .then(Commands.argument("NewName", StringArgumentType.word())               // - /actor rename "Name" "NewName" ...
                 .executes(this::setName)))));
     }
 
@@ -158,8 +158,11 @@ public class ActorCommand {
     }
     public int setName(CommandContext<CommandSourceStack> command) throws CommandSyntaxException {
         String currentName = StringArgumentType.getString(command, "Name");
-        String newName = StringArgumentType.getString(command, "newName");
+        String newName = StringArgumentType.getString(command, "NewName");
+        CustomFablazeEntity entity = NPCMapper.getActorByName(currentName);
+        entity.changeKey(newName);
         NPCMapper.renameActorInList(currentName, newName);
+
         return 1;
     }
 

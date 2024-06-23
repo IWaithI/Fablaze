@@ -8,10 +8,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.player.Player;
@@ -31,21 +28,25 @@ import ua.iwaithi.fablaze.content.entity.goal.MoveToGoal;
 import ua.iwaithi.fablaze.init.ModAnimations;
 import ua.iwaithi.fablaze.init.ModEntities;
 
+import java.util.UUID;
+
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntity {
 
     protected final AnimationSystem animations = AnimationSystem.create(this);
-    private Entity lookAt = null;
-    private Vec3 lookPos = null;
-    private boolean isCustomLookSet = false;
 
     public CustomFablazeEntity(EntityType<? extends CustomFablazeEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         if(!level().isClientSide()){
-            NPCMapper.addActorToList(Integer.toString(this.getId()),this);
+            NPCMapper.addActorToList(String.valueOf(this.getId()),this);
         }
         this.setPersistenceRequired();
     }
+
+    private String key = String.valueOf(this.getId());
+    private Entity lookAt = null;
+    private Vec3 lookPos = null;
+    private boolean isCustomLookSet = false;
 
     @Override
     public void setupSystem(AnimationSystem.Builder builder)
@@ -72,7 +73,7 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         super.defineSynchedData();
         this.entityData.define(DATA_GLOW, getPersistentData().getBoolean("isGlow"));
         this.entityData.define(DATA_CHARACTER, getPersistentData().getString("character"));
-        if(entityData.get(DATA_CHARACTER).isBlank()){
+        if(entityData.get(DATA_CHARACTER).isEmpty()){
             this.entityData.set(DATA_CHARACTER, "symmetry");
         }
     }
@@ -86,23 +87,61 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         return entityData.get(DATA_CHARACTER);
     }
     public boolean isGlow(){ return  entityData.get(DATA_GLOW); }
+    public String getKey(){return this.key;}
 
-    @Override
-    public void addAdditionalSaveData(CompoundTag pCompound)
-    {
-        pCompound.put("Animations", animations.serializeNBT());
-        pCompound.putString("character", this.entityData.get(DATA_CHARACTER));
-        pCompound.putBoolean("isGlow", this.entityData.get(DATA_GLOW));
-        super.addAdditionalSaveData(pCompound);
+    public void changeKey(String key){
+        this.key = key;
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag pCompound)
-    {
+    public void addAdditionalSaveData(CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+
+        pCompound.putString("Key", this.key);
+        pCompound.put("Animations", animations.serializeNBT());
+        pCompound.putString("character", this.entityData.get(DATA_CHARACTER));
+        pCompound.putBoolean("isGlow", this.entityData.get(DATA_GLOW));
+
+        if(lookGoal.getLookType() != null) {
+            pCompound.putString("looktype", lookGoal.getLookType());
+        }
+        if(lookGoal.getLookType() == null && lookGoal.getLookAt() != null){
+            pCompound.putString("looktarget", lookGoal.getLookAt().getStringUUID());
+        }
+        if(lookGoal.getLookPos() != null){
+            pCompound.putDouble("xlook", lookGoal.getLookPos().x);
+            pCompound.putDouble("ylook", lookGoal.getLookPos().y);
+            pCompound.putDouble("zlook", lookGoal.getLookPos().z);
+        }
+
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+
+        changeKey(pCompound.getString("Key"));
+        if(!key.isEmpty()){NPCMapper.renameActorInList(String.valueOf(this.getId()),this.key);}
+
         animations.deserializeNBT(pCompound.getCompound("Animations"));
         this.entityData.set(DATA_CHARACTER, pCompound.getString("character"));
         this.entityData.set(DATA_GLOW, pCompound.getBoolean("isGlow"));
-        super.readAdditionalSaveData(pCompound);
+
+        if(!pCompound.getString("looktype").isEmpty()){
+            setLookType(new ResourceLocation(pCompound.getString("looktype")));
+        }
+        if(!pCompound.getString("looktarget").isEmpty()){
+            lookGoal.loadEntityUUID(UUID.fromString(pCompound.getString("looktarget")));
+        }
+
+        if(pCompound.getDouble("xlook") != 0){
+            setLookPos(new Vec3(
+                    pCompound.getDouble("xlook"),
+                    pCompound.getDouble("ylook"),
+                    pCompound.getDouble("zlook")
+            ));
+        }
+
     }
 
     @SubscribeEvent
@@ -135,17 +174,14 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         moveGoal.setTarget(target);
         moveGoal.setSpeed(speed);
     }
-
     public void setLookAt(Entity target) {
         resetLookGoals();
         lookGoal.setLookAt(target);
     }
-
     public void setLookPos(Vec3 pos) {
         resetLookGoals();
         lookGoal.setLookPos(pos);
     }
-
     public void setLookType(ResourceLocation target) {
         resetLookGoals();
         lookGoal.setLookType(target);
@@ -161,7 +197,10 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
             } else if(!level().isClientSide() && hand == InteractionHand.MAIN_HAND) player.sendSystemMessage(Component.literal("Glow OFF"));
             entityData.set(DATA_GLOW, !entityData.get(DATA_GLOW));
 
-        }return InteractionResult.SUCCESS;
+        }else if(!level().isClientSide() && hand == InteractionHand.MAIN_HAND){
+            player.sendSystemMessage(Component.literal(this.key));
+        }
+        return InteractionResult.SUCCESS;
     }
 
     @Override
