@@ -1,8 +1,6 @@
 package ua.iwaithi.fablaze.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -20,6 +18,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import ua.iwaithi.fablaze.content.dataset.NPCMapper;
 import ua.iwaithi.fablaze.content.entity.CustomFablazeEntity;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 
 public class ActorCommand {
 
@@ -34,10 +36,10 @@ public class ActorCommand {
 
                 .then(Commands.literal("list").executes(this::listing))                     // - /actor list = Execute
 //
-//                .then(Commands.literal("say")
-//                .then(Commands.argument("Name", StringArgumentType.string())
-//                .then(Commands.argument("Message", StringArgumentType.string())
-//                .executes(this::sendMessage))))
+                .then(Commands.literal("say")
+                .then(Commands.argument("Name", StringArgumentType.string())
+                .then(Commands.argument("Message", StringArgumentType.string())
+                .executes(this::sendMessage))))
 //
 //                .then(Commands.literal("name")                                              // - /actor name ...
 //                .then(Commands.argument("Name",StringArgumentType.word())                   // - /actor name "Name" ...
@@ -166,4 +168,9 @@ public class ActorCommand {
         return 1;
     }
 
+    public int sendMessage(CommandContext<CommandSourceStack> command) throws CommandSyntaxException {
+        CustomFablazeEntity entity = NPCMapper.getActorByName(StringArgumentType.getString(command, "Name"));
+        entity.talk(StringArgumentType.getString(command, "Message"));
+        return 1;
+    }
 }

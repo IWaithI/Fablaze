@@ -243,4 +243,14 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         }
     }
 
+
+    public void talk(String msg) {
+        if(!level().isClientSide() && Minecraft.getInstance().player != null) {
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal( "[" + this.getId() + "]").setStyle(COLOR)
+                    .append(Component.literal(" " + msg).withStyle(ChatFormatting.WHITE)));
+        }
+    }
+
+    Style COLOR = Style.EMPTY.withColor(4082293);
+
 }
