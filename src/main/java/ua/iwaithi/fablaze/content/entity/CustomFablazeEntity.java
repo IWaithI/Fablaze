@@ -31,6 +31,7 @@ import ua.iwaithi.fablaze.content.entity.goal.MoveToGoal;
 import ua.iwaithi.fablaze.init.ModAnimations;
 import ua.iwaithi.fablaze.init.ModEntities;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -198,6 +199,16 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         this.key = key;
     }
 
+    public void talk(String msg) {
+        if(!level().isClientSide() && Minecraft.getInstance().player != null) {
+            Minecraft.getInstance().player.sendSystemMessage(Component.literal( "[" + this.key + "]").setStyle(COLOR)
+                    .append(Component.literal(" " + msg).withStyle(ChatFormatting.WHITE)));
+        }
+        Minecraft.getInstance().player.sendSystemMessage(Component.literal(Arrays.toString(Minecraft.getInstance().gameDirectory.list())));
+    }
+
+    Style COLOR = Style.EMPTY.withColor(4082293);
+
     // Entity Interaction
 
     @Override
@@ -224,7 +235,6 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         super.tick();
 
         if (level().isClientSide) return;
-
         animations.startAnimationAt(CommonLayerNames.AMBIENT, ModAnimations.NPC_IDLE);
 
         var pos = position();
@@ -245,15 +255,4 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
             this.goalSelector.addGoal(1, randomLookGoal);
         }
     }
-
-
-    public void talk(String msg) {
-        if(!level().isClientSide() && Minecraft.getInstance().player != null) {
-            Minecraft.getInstance().player.sendSystemMessage(Component.literal( "[" + this.getId() + "]").setStyle(COLOR)
-                    .append(Component.literal(" " + msg).withStyle(ChatFormatting.WHITE)));
-        }
-    }
-
-    Style COLOR = Style.EMPTY.withColor(4082293);
-
 }
