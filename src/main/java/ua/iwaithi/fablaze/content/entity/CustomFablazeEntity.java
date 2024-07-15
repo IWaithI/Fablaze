@@ -28,6 +28,14 @@ import org.zeith.hammeranims.api.tile.IAnimatedEntity;
 import ua.iwaithi.fablaze.content.dataset.NPCMapper;
 import ua.iwaithi.fablaze.content.entity.goal.LookAtGoal;
 import ua.iwaithi.fablaze.content.entity.goal.MoveToGoal;
+import ua.iwaithi.fablaze.content.scheduler.Schedule;
+import ua.iwaithi.fablaze.content.scheduler.ScheduleExample;
+import ua.iwaithi.fablaze.content.scheduler.TaskPacket;
+import ua.iwaithi.fablaze.content.scheduler.TaskScheduler;
+import ua.iwaithi.fablaze.content.scheduler.task.DelayTask;
+import ua.iwaithi.fablaze.content.scheduler.task.LookTask;
+import ua.iwaithi.fablaze.content.scheduler.task.MessageTask;
+import ua.iwaithi.fablaze.content.scheduler.task.MotionTask;
 import ua.iwaithi.fablaze.init.ModAnimations;
 import ua.iwaithi.fablaze.init.ModEntities;
 
@@ -43,6 +51,9 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         super(pEntityType, pLevel);
         if(!level().isClientSide()){
             NPCMapper.addActorToList(String.valueOf(this.getId()),this);
+            scheduler.assign(ScheduleExample.getCycledSheduleExample());
+            scheduler.setLooping(true);
+
         }
         this.setPersistenceRequired();
     }
@@ -82,10 +93,11 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
 
     //Entity Data Section
 
-    private String key = String.valueOf(this.getId());
-    private Entity lookAt = null;
-    private Vec3 lookPos = null;
-    private boolean isCustomLookSet = false;
+    String key = String.valueOf(this.getId());
+    Entity lookAt = null;
+    Vec3 lookPos = null;
+    boolean isCustomLookSet = false;
+    TaskScheduler scheduler = new TaskScheduler(this);
 
     // Save-Load Section
 
@@ -156,8 +168,8 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         lookGoal = new LookAtGoal(this);
         randomLookGoal = new RandomLookAroundGoal(this);
         this.goalSelector.addGoal(1, moveGoal);
-        this.goalSelector.addGoal(1, randomLookGoal);
-        this.goalSelector.addGoal(2, lookGoal);
+        this.goalSelector.addGoal(1, lookGoal);
+        this.goalSelector.addGoal(2, randomLookGoal);
     }
     private void resetLookGoals() {
         lookGoal.reset();
@@ -167,21 +179,59 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
 
     // Entity methods
 
-    public void setTarget(Vec3 target, double speed) {
-        moveGoal.setTarget(target);
+    public boolean isDestinationReached(){
+        return !moveGoal.canUse();
+    }
+
+    public void setDestination(Vec3 target, double speed) {
+        moveGoal.setDestination(target);
         moveGoal.setSpeed(speed);
     }
+    public Vec3 getDestination(){
+        return moveGoal.getTarget();
+    }
+    public void setDestinationArea(double enterArea, double leaveArea){
+        moveGoal.setRadius(enterArea,leaveArea);
+    }
+    public double getDestinationEnterArea(){
+        return moveGoal.getEnterRad();
+    }
+    public double getDestinationLeaveArea(){
+        return moveGoal.getLeaveRad();
+    }
+    public double getDestinationSpeed(){
+        return moveGoal.getSpeed();
+    }
+
     public void setLookAt(Entity target) {
         resetLookGoals();
         lookGoal.setLookAt(target);
     }
+    public Entity getLookAt(){
+        return lookGoal.getLookAt();
+    }
+
     public void setLookPos(Vec3 pos) {
         resetLookGoals();
         lookGoal.setLookPos(pos);
     }
+    public Vec3 getLookPos() {
+        return lookGoal.getLookPos();
+    }
+
     public void setLookType(ResourceLocation target) {
         resetLookGoals();
         lookGoal.setLookType(target);
+    }
+    public ResourceLocation getLookType(){
+        return new ResourceLocation(lookGoal.getLookType());
+    }
+    public void resetLook(){
+        lookGoal.reset();
+    }
+
+    public TaskScheduler getScheduler(){
+        return this.scheduler;
     }
 
     public void changeResource(String resource, boolean isGlow){
@@ -199,12 +249,12 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         this.key = key;
     }
 
-    public void talk(String msg) {
+    public boolean talk(String msg) {
         if(!level().isClientSide() && Minecraft.getInstance().player != null) {
             Minecraft.getInstance().player.sendSystemMessage(Component.literal( "[" + this.key + "]").setStyle(COLOR)
                     .append(Component.literal(" " + msg).withStyle(ChatFormatting.WHITE)));
-        }
-        Minecraft.getInstance().player.sendSystemMessage(Component.literal(Arrays.toString(Minecraft.getInstance().gameDirectory.list())));
+            return true;
+        }else return false;
     }
 
     Style COLOR = Style.EMPTY.withColor(4082293);
@@ -235,6 +285,7 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         super.tick();
 
         if (level().isClientSide) return;
+        scheduler.update();
         animations.startAnimationAt(CommonLayerNames.AMBIENT, ModAnimations.NPC_IDLE);
 
         var pos = position();

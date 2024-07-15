@@ -14,15 +14,10 @@ import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import ua.iwaithi.fablaze.content.dataset.NPCMapper;
 import ua.iwaithi.fablaze.content.entity.CustomFablazeEntity;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 
 public class ActorCommand {
 
@@ -108,7 +103,7 @@ public class ActorCommand {
         CustomFablazeEntity entity = NPCMapper.getActorByName(StringArgumentType.getString(command,"Name"));
         Vec3 vector = Vec3Argument.getVec3(command,"Coordinates");
 
-        entity.setTarget(vector,1d);
+        entity.setDestination(vector,1d);
 
 
         return 1;

@@ -1,9 +1,11 @@
 package ua.iwaithi.fablaze.init;
 
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import ua.iwaithi.fablaze.command.ActorCommand;
+import ua.iwaithi.fablaze.content.ModTimer;
 import ua.iwaithi.fablaze.content.dataset.NPCMapper;
 import ua.iwaithi.fablaze.content.entity.CustomFablazeEntity;
 
@@ -21,4 +23,8 @@ public class ModForgeEvents {
             NPCMapper.deleteActorFromList(String.valueOf(event.getEntity().getId()));
         }
     }
+    public static void clientTickEvent(TickEvent event){
+        if(event.type == TickEvent.Type.SERVER) ModTimer.tick();
+    }
+
 }

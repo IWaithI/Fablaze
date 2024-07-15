@@ -27,6 +27,7 @@ public class Fablaze
 		forgebus.addListener(ModForgeEvents::onUnload);
 		forgebus.addListener(ModForgeEvents::onCommandsRegister);
 		forgebus.addListener(ModForgeEvents::onActorDeath);
+		forgebus.addListener(ModForgeEvents::clientTickEvent);
 
 		ModItems.register(modEventBus);
 	}

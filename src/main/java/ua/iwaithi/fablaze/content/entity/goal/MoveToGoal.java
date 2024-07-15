@@ -20,7 +20,7 @@ public class MoveToGoal extends Goal {
         this.navigator = entity.getNavigation();
     }
 
-    public void setTarget(Vec3 coordinates){this.target = coordinates;}
+    public void setDestination(Vec3 coordinates){this.target = coordinates;}
     public Vec3 getTarget(){return this.target;}
 
     public void setSpeed(double speed){this.speed = speed;}
@@ -37,7 +37,8 @@ public class MoveToGoal extends Goal {
     public boolean canUse() {
         if(Math.abs(new Vec3(actor.xo,actor.yo,actor.zo).subtract(target).length()) <= enterRad){
             return false;
-        }else return Math.abs(new Vec3(actor.xo, actor.yo, actor.zo).subtract(target).length()) >= leaveRad;
+        }else {
+            return Math.abs(new Vec3(actor.xo, actor.yo, actor.zo).subtract(target).length()) >= leaveRad;}
     }
 
     @Override
