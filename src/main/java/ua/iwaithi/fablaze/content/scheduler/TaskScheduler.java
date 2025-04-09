@@ -2,8 +2,6 @@ package ua.iwaithi.fablaze.content.scheduler;
 
 import ua.iwaithi.fablaze.content.entity.CustomFablazeEntity;
 import ua.iwaithi.fablaze.content.scheduler.task.ITask;
-import ua.iwaithi.fablaze.content.scheduler.task.MessageTask;
-import ua.iwaithi.fablaze.content.scheduler.task.MotionTask;
 
 public class TaskScheduler {
     enum SchedulerState{
@@ -30,14 +28,17 @@ public class TaskScheduler {
         System.out.println(" SYSTEM: " + state +" - Packet ID: " + currentPacketID + " - Stage ID: " + currentStageID);
     }
 
-    private void loop(){
+    private boolean loop(){
+        if(this.schedule == null) return false;
         if (this.state == SchedulerState.Loop && this.currentPacketID == schedule.scheduleSize()){
             this.currentPacketID = 0;
             schedule.reset();
+            return true;
         }else if(this.state == SchedulerState.Active && this.currentPacketID == schedule.scheduleSize()){
             this.currentPacketID = 0;
             this.state = SchedulerState.Idle;
-        }
+            return true;
+        }else return false;
     }
     public boolean isLooping(){
         return state == SchedulerState.Loop;
@@ -115,7 +116,7 @@ public class TaskScheduler {
 
     public void update(){
         if(tick++ % tickrate == 0){
-            loop();
+            if(!loop()) return;
             var packet = getPacket(this.currentPacketID);
             if(packet != null){
                 if (packet.isAllDone()) {

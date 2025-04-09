@@ -28,18 +28,11 @@ import org.zeith.hammeranims.api.tile.IAnimatedEntity;
 import ua.iwaithi.fablaze.content.dataset.NPCMapper;
 import ua.iwaithi.fablaze.content.entity.goal.LookAtGoal;
 import ua.iwaithi.fablaze.content.entity.goal.MoveToGoal;
-import ua.iwaithi.fablaze.content.scheduler.Schedule;
 import ua.iwaithi.fablaze.content.scheduler.ScheduleExample;
-import ua.iwaithi.fablaze.content.scheduler.TaskPacket;
 import ua.iwaithi.fablaze.content.scheduler.TaskScheduler;
-import ua.iwaithi.fablaze.content.scheduler.task.DelayTask;
-import ua.iwaithi.fablaze.content.scheduler.task.LookTask;
-import ua.iwaithi.fablaze.content.scheduler.task.MessageTask;
-import ua.iwaithi.fablaze.content.scheduler.task.MotionTask;
 import ua.iwaithi.fablaze.init.ModAnimations;
 import ua.iwaithi.fablaze.init.ModEntities;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -51,8 +44,8 @@ public class CustomFablazeEntity extends PathfinderMob implements IAnimatedEntit
         super(pEntityType, pLevel);
         if(!level().isClientSide()){
             NPCMapper.addActorToList(String.valueOf(this.getId()),this);
-            scheduler.assign(ScheduleExample.getCycledSheduleExample());
-            scheduler.setLooping(true);
+//            scheduler.assign(ScheduleExample.getCycledSheduleExample());
+//            scheduler.setLooping(true);
 
         }
         this.setPersistenceRequired();
